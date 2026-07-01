@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>생각하고 조작하는 확률 실험실 - 중2 수학</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js for visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght=300;400;500;700;900&display=swap');
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f0f6fa; /* 부드러운 빙하빛이 감도는 연한 아이스 블루 */
+        }
+    </style>
+</head>
+<body class="min-h-screen text-slate-800 flex flex-col">
+
+    <!-- Header (핑구 남극 하늘&바다 테마) -->
+    <header class="bg-gradient-to-r from-sky-400 via-blue-500 to-indigo-600 text-white shadow-lg py-6 px-4 sm:px-8">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div>
+                <h1 class="text-2xl sm:text-3xl font-black mt-2 flex items-center gap-2">
+                    🐧 생각하고 조작하는 확률 실험실
+                </h1>
+                <p class="text-sm text-sky-100 mt-1 font-semibold">중학교 2학년 수학 | 8단원 확률</p>
+            </div>
+            <div class="flex gap-2">
+                <div class="bg-white/10 backdrop-blur-md px-5 py-2.5 rounded-2xl border border-white/20 text-center">
+                    <span class="text-xs text-sky-200 block font-bold mb-0.5">🎯 배움 목표</span>
+                    <span class="text-sm font-black text-white">확률의 개념과 그 기본 성질을 이해한다.</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Tab (깔끔한 남극 아이스 테마) -->
+    <div class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 flex overflow-x-auto">
+            <button onclick="switchTab('intro')" id="tab-intro" class="tab-btn px-6 py-4 text-sm font-bold border-b-4 border-sky-500 text-sky-600 whitespace-nowrap transition-colors flex items-center gap-2">
+                📖 1. 단원 열기
+            </button>
+            <button onclick="switchTab('experiment')" id="tab-experiment" class="tab-btn px-6 py-4 text-sm font-bold border-b-4 border-transparent text-slate-500 hover:text-slate-800 whitespace-nowrap transition-colors flex items-center gap-2">
+                🧪 2. 주사위 던지기 실험
+            </button>
+            <button onclick="switchTab('practice')" id="tab-practice" class="tab-btn px-6 py-4 text-sm font-bold border-b-4 border-transparent text-slate-500 hover:text-slate-800 whitespace-nowrap transition-colors flex items-center gap-2">
+                📝 3. 개념과 문제 해결
+            </button>
+            <button onclick="switchTab('board')" id="tab-board" class="tab-btn px-6 py-4 text-sm font-bold border-b-4 border-transparent text-slate-500 hover:text-slate-800 whitespace-nowrap transition-colors flex items-center gap-2">
+                💬 4. 우리의 생각 나누기 (Padlet 연동)
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Contents Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+
+        <!-- 1. INTRO TAB -->
+        <section id="content-intro" class="tab-content block space-y-6">
+            <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-md border border-slate-100">
+                <h2 class="text-xl sm:text-2xl font-black text-slate-900 mb-5 flex items-center gap-2">
+                    <span class="p-2 bg-sky-50 rounded-xl text-xl">🤔</span> 확률을 구하는 두 가지 길
+                </h2>
+                <div class="grid md:grid-cols-2 gap-6 items-center">
+                    <div class="space-y-4">
+                        <p class="text-base sm:text-lg leading-relaxed text-slate-600 font-medium">
+                            수학에서 어떤 사건이 일어날 가능성을 수로 나타낸 것을 우리는 <span class="font-bold text-indigo-600">확률</span>이라고 부릅니다. 이 확률을 구하는 방법에는 크게 두 가지가 있습니다.
+                        </p>
+                        
+                        <!-- 가독성과 심미성을 획기적으로 개선한 두 방법 비교 카드 레이아웃 -->
+                        <div class="space-y-4 pt-1">
+                            <!-- 방법 1 카드 (남극 하늘빛 쿨그레이 테마) -->
+                            <div class="p-5 bg-gradient-to-r from-sky-50 to-white rounded-2xl border-l-4 border-sky-400 border-y border-r border-slate-100 shadow-sm transition-all hover:shadow-md">
+                                <div class="flex items-start gap-3">
+                                    <span class="text-2xl mt-0.5 select-none">❄️</span>
+                                    <div>
+                                        <span class="inline-block bg-sky-100 text-sky-800 text-[10px] font-black px-2.5 py-0.5 rounded-full mb-1">방법 1</span>
+                                        <h4 class="font-black text-slate-900 text-base sm:text-lg">상대도수로서의 확률</h4>
+                                        <p class="text-xs sm:text-sm text-slate-600 mt-1 leading-relaxed font-medium">
+                                            주사위를 실제로 아주 많이 던지는 <strong class="text-sky-600">실험이나 관찰</strong>을 통해, 전체 던진 횟수 중에서 원하는 눈(6)이 나온 실제 비율(상대도수)을 직접 확인하는 실천적인 방법입니다.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- 방법 2 카드 (핑구 부리빛 오렌지 테마) -->
+                            <div class="p-5 bg-gradient-to-r from-amber-50 to-white rounded-2xl border-l-4 border-amber-400 border-y border-r border-slate-100 shadow-sm transition-all hover:shadow-md">
+                                <div class="flex items-start gap-3">
+                                    <span class="text-2xl mt-0.5 select-none">☀️</span>
+                                    <div>
+                                        <span class="inline-block bg-amber-100 text-amber-800 text-[10px] font-black px-2.5 py-0.5 rounded-full mb-1">방법 2</span>
+                                        <h4 class="font-black text-slate-900 text-base sm:text-lg">경우의 수 비율로서의 확률</h4>
+                                        <p class="text-xs sm:text-sm text-slate-600 mt-1 leading-relaxed font-medium">
+                                            주사위를 직접 던져보지 않고도, 일어날 수 있는 모든 가능성이 같다는 약속 하에 <strong class="text-amber-600">[사건이 일어나는 경우의 수]</strong>를 <strong class="text-amber-600">[모든 경우의 수]</strong>로 나누어 논리적으로 계산하는 수학적인 방법입니다.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-br from-sky-50 via-blue-50/30 to-amber-50/20 p-6 sm:p-8 rounded-3xl border border-sky-100 flex flex-col justify-center items-center text-center shadow-inner">
+                        <span class="text-6xl mb-4">🐧</span>
+                        <h3 class="font-black text-lg text-slate-900 mb-2">실험실의 주인공이 되어 비밀을 밝혀봐요!</h3>
+                        <p class="text-sm text-slate-600 max-w-md leading-relaxed">
+                            주사위를 단 몇 번만 던질 때는 우리의 예상이 빗나가기 일쑤입니다. 하지만 실험 횟수를 크게 늘리면 실제 데이터가 신비로운 일정한 규칙 속으로 스르륵 고정되기 시작합니다. 그 놀라운 정착지가 어디인지 찾아 실험실로 출발해 볼까요?
+                        </p>
+                        <button onclick="switchTab('experiment')" class="mt-6 px-6 py-3 bg-amber-500 hover:bg-amber-600 active:scale-95 text-white font-black rounded-2xl transition shadow-md flex items-center gap-1.5">
+                            실험실 입장하기 🐾
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 미니 퀴즈 코너 -->
+            <div class="bg-white p-6 rounded-3xl shadow-md border border-slate-100">
+                <h2 class="text-xl font-black text-slate-900 mb-4 flex items-center gap-2">
+                    <span class="p-2 bg-sky-50 rounded-xl text-xl">❓</span> 생각 열기 퀴즈
+                </h2>
+                <div class="space-y-4">
+                    <!-- 퀴즈 1 -->
+                    <div class="p-5 bg-slate-50 rounded-2xl border border-slate-100">
+                        <p class="font-bold text-slate-800 mb-3 text-sm sm:text-base">Q1. 주사위를 딱 10번 던졌을 때 6의 눈이 단 한 번도 안 나올 수도 있을까요?</p>
+                        <div class="flex flex-wrap gap-2">
+                            <button onclick="checkQuizAnswer('quiz1', true)" class="px-4 py-2 bg-white border border-slate-200 hover:bg-sky-50 hover:border-sky-300 rounded-xl font-bold transition text-xs sm:text-sm active:scale-95 shadow-sm">네, 충분히 가능해요!</button>
+                            <button onclick="checkQuizAnswer('quiz1', false)" class="px-4 py-2 bg-white border border-slate-200 hover:bg-rose-50 hover:border-rose-300 rounded-lg font-bold transition text-xs sm:text-sm active:scale-95 shadow-sm">아니요, 확률이라는 게 있으니 무조건 최소 한 번은 나와야 해요.</button>
+                        </div>
+                        <p id="quiz1-feedback" class="hidden mt-3 text-sm font-medium"></p>
+                    </div>
+
+                    <!-- 퀴즈 2 -->
+                    <div class="p-5 bg-slate-50 rounded-2xl border border-slate-100">
+                        <p class="font-bold text-slate-800 mb-3 text-sm sm:text-base">Q2. 주사위를 1만 번처럼 엄청나게 많이 던진다면, 6의 눈이 나오는 실제 비율(상대도수)은 어떻게 변할까요?</p>
+                        <div class="flex flex-wrap gap-2">
+                            <button onclick="checkQuizAnswer('quiz2', true)" class="px-4 py-2 bg-white border border-slate-200 hover:bg-sky-50 hover:border-sky-300 rounded-xl font-bold transition text-xs sm:text-sm active:scale-95 shadow-sm">실험을 아주 많이 반복할수록 점차 특정한 일정한 값(기준선)에 엄청나게 가까워집니다.</button>
+                            <button onclick="checkQuizAnswer('quiz2', false)" class="px-4 py-2 bg-white border border-slate-200 hover:bg-rose-50 hover:border-rose-300 rounded-lg font-bold transition text-xs sm:text-sm active:scale-95 shadow-sm">매번 완전히 무작위이므로, 1만 번을 던지든 10만 번을 던지든 끝까지 엄청나게 불규칙하게 날뛰며 요동칩니다.</button>
+                        </div>
+                        <p id="quiz2-feedback" class="hidden mt-3 text-sm font-medium"></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. EXPERIMENT TAB -->
+        <section id="content-experiment" class="tab-content hidden space-y-6">
+            <div class="grid lg:grid-cols-12 gap-6">
+                <!-- 왼쪽: 컨트롤러 및 인터랙션 -->
+                <div class="lg:col-span-5 space-y-6">
+                    
+                    <!-- 주사위 실험 패널 -->
+                    <div id="panel-dice" class="tool-panel bg-white p-6 rounded-3xl shadow-md border border-slate-100 space-y-6">
+                        <!-- 주사위 비주얼라이저 -->
+                        <div class="text-center py-6 bg-gradient-to-b from-sky-50 to-blue-50/40 rounded-3xl relative overflow-hidden flex flex-col items-center border border-sky-100/50">
+                            <div class="w-24 h-24 mb-4 flex items-center justify-center">
+                                <div id="dice-element" class="w-24 h-24 bg-white rounded-3xl border-4 border-slate-800 shadow-xl flex items-center justify-center relative transition-all duration-300">
+                                    <svg id="dice-face-svg" class="w-20 h-20" viewBox="0 0 100 100">
+                                        <!-- 주사위 눈이 자바스크립트로 동적 렌더링됩니다. -->
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="text-lg font-black text-slate-800 px-4" id="dice-text">직접 주사위를 던지거나 가상 주사위를 돌려보세요!</div>
+                            <p class="text-xs text-sky-600 mt-1 font-bold">실험 데이터가 어디로 수렴해 가는지 눈으로 직접 목격해 봐요!</p>
+                        </div>
+
+                        <!-- 실험 방법 선택 -->
+                        <div class="border-b border-slate-100 flex gap-2">
+                            <button onclick="toggleDiceMode('manual')" id="btn-mode-manual" class="flex-1 pb-2 text-sm font-black border-b-4 border-amber-500 text-amber-600 transition-all">🐾 실제 실험 기록</button>
+                            <button onclick="toggleDiceMode('virtual')" id="btn-mode-virtual" class="flex-1 pb-2 text-sm font-black border-b-4 border-transparent text-slate-400 hover:text-slate-600 transition-all">🤖 가상 시뮬레이션</button>
+                        </div>
+
+                        <!-- [1] 실제 오프라인 결과 수동 입력 영역 -->
+                        <div id="dice-section-manual" class="space-y-6">
+                            
+                            <!-- 1회 직접 입력 구역 -->
+                            <div class="p-5 bg-gradient-to-br from-amber-50 to-orange-50/50 border-2 border-amber-200 rounded-3xl space-y-4 shadow-sm">
+                                <div class="flex items-center gap-2">
+                                    <span class="flex items-center justify-center w-7 h-7 rounded-full bg-amber-500 text-white font-black text-sm shadow-sm">1</span>
+                                    <h4 class="text-sm sm:text-base font-black text-amber-950 flex items-center gap-1.5">
+                                        1회씩 직접 던지고 기록하기
+                                    </h4>
+                                </div>
+                                <p class="text-xs sm:text-sm text-slate-600 leading-relaxed font-semibold">
+                                    직접 주사위를 한 번 던져본 후, 나온 눈에 맞게 아래 버튼을 꾹 눌러 기록해보세요! <br>
+                                    <span class="text-amber-600 font-bold text-xs">⚠️ 실제 실험 기록은 누적되지 않고 새롭게 측정됩니다.</span>
+                                </p>
+                                <div class="grid grid-cols-2 gap-3 pt-1">
+                                    <button onclick="recordManualDice(true)" class="py-3 px-4 bg-white hover:bg-amber-100 active:scale-95 border-2 border-amber-400 rounded-2xl text-xs sm:text-sm font-black text-amber-900 flex flex-col items-center justify-center gap-2 transition shadow-sm hover:shadow-md">
+                                        <span class="text-2xl">🎲</span>
+                                        <span>6이 나왔어요!</span>
+                                    </button>
+                                    <button onclick="recordManualDice(false)" class="py-3 px-4 bg-white hover:bg-slate-100 active:scale-95 border-2 border-slate-300 rounded-2xl text-xs sm:text-sm font-black text-slate-600 flex flex-col items-center justify-center gap-2 transition shadow-sm hover:shadow-md">
+                                        <span class="text-2xl">🚫</span>
+                                        <span>다른 눈이에요</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- 10회 직접 입력 구역 -->
+                            <div class="p-5 bg-gradient-to-br from-sky-50 to-blue-50/50 border-2 border-sky-200 rounded-3xl space-y-4 shadow-sm">
+                                <div class="flex items-center gap-2">
+                                    <span class="flex items-center justify-center w-7 h-7 rounded-full bg-sky-500 text-white font-black text-sm shadow-sm">2</span>
+                                    <h4 class="text-sm sm:text-base font-black text-sky-950 flex items-center gap-1.5">
+                                        10회 모둠별 일괄 기록하기
+                                    </h4>
+                                </div>
+                                <p class="text-xs sm:text-sm text-slate-600 leading-relaxed font-semibold">
+                                    모둠원들과 함께 주사위를 총 10번 던진 뒤, <b>6의 눈이 나온 횟수</b>를 아래에 입력해 저장하세요! <br>
+                                    <span class="text-sky-600 font-bold text-xs">⚠️ 실제 실험 기록은 누적되지 않고 새롭게 측정됩니다.</span>
+                                </p>
+                                
+                                <div class="bg-white p-4 rounded-2xl border border-sky-100 shadow-inner space-y-2">
+                                    <div class="grid grid-cols-2 gap-6 items-center">
+                                        <div class="space-y-1.5 text-center">
+                                            <label class="block text-xs font-black text-sky-700">🎲 6의 눈 횟수</label>
+                                            <div class="flex items-center justify-center gap-1">
+                                                <button onclick="adjustManualDice10(-1)" type="button" class="w-8 h-8 bg-sky-50 hover:bg-sky-100 active:scale-90 font-black rounded-lg flex items-center justify-center text-sky-700 transition select-none">-</button>
+                                                <input type="number" id="manual-dice-sixes" min="0" max="10" value="2" oninput="validateManualDice10(this)" class="w-14 px-1 py-1.5 border-2 border-sky-200 rounded-lg text-center font-black text-lg text-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-400">
+                                                <button onclick="adjustManualDice10(1)" type="button" class="w-8 h-8 bg-sky-50 hover:bg-sky-100 active:scale-90 font-black rounded-lg flex items-center justify-center text-sky-700 transition select-none">+</button>
+                                            </div>
+                                        </div>
+                                        <div class="space-y-1.5 text-center border-l border-slate-100 pl-4">
+                                            <label class="block text-xs font-black text-slate-500">🚫 다른 눈 횟수</label>
+                                            <div class="flex items-center justify-center py-1">
+                                                <input type="number" id="manual-dice-others" min="0" max="10" value="8" readonly class="w-14 py-1 bg-slate-50 border border-slate-200 rounded-lg text-center font-black text-lg text-slate-400 select-none pointer-events-none">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <button onclick="submitManualDice10()" class="w-full py-3 bg-sky-600 hover:bg-sky-700 active:scale-[0.98] text-white font-black rounded-2xl text-xs sm:text-sm transition-all shadow-md flex items-center justify-center gap-2">
+                                    📥 실제 실험 10회 결과 저장하기
+                                </button>
+                            </div>
+
+                            <!-- 기록 초기화 -->
+                            <button onclick="resetDiceExperiment()" class="w-full py-3.5 bg-slate-800 hover:bg-slate-900 active:scale-[0.98] text-white font-black rounded-2xl transition text-xs flex items-center justify-center gap-1.5 shadow-sm">
+                                🔄 모든 실험 기록 리셋하기
+                            </button>
+                        </div>
+
+                        <!-- [2] 가상 시뮬레이션 영역 -->
+                        <div id="dice-section-virtual" class="hidden space-y-4">
+                            <div class="space-y-2">
+                                <label class="block text-xs font-black text-slate-500">가상으로 던질 횟수 선택</label>
+                                <p class="text-[11px] text-sky-600 font-semibold mb-2">💡 가상 시뮬레이션 데이터는 계속 누적되어 수렴 과정을 증명합니다.</p>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <button onclick="setSimCount(100)" class="count-btn py-3 text-sm font-bold rounded-lg bg-sky-600 text-white transition">100회 던지기</button>
+                                    <button onclick="setSimCount(1000)" class="count-btn py-3 text-sm font-bold rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition">1000회 던지기</button>
+                                </div>
+                                <div class="flex items-center gap-2 mt-2">
+                                    <input type="number" id="input-dice-custom" min="10" max="10000" value="100" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-sky-500 focus:outline-none" placeholder="직접 입력 (10 ~ 10000)">
+                                    <span class="text-sm text-slate-500 shrink-0 font-medium">번 던지기</span>
+                                </div>
+                            </div>
+
+                            <!-- 실행 버튼 그룹 -->
+                            <div class="flex gap-2 pt-2">
+                                <button onclick="runDiceExperiment()" class="flex-1 py-3.5 bg-sky-600 hover:bg-sky-700 text-white font-bold rounded-xl shadow-md transition flex justify-center items-center gap-2">
+                                    🤖 가상 실험 실행!
+                                </button>
+                                <button onclick="resetDiceExperiment()" class="px-5 py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl transition font-bold">
+                                    초기화
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 오른쪽: 통계 테이블 및 실시간 변화 그래프 -->
+                <div class="lg:col-span-7 space-y-6 flex flex-col justify-between">
+                    <!-- 누적 통계 테이블 -->
+                    <div class="bg-white p-6 rounded-3xl shadow-md border border-slate-100 flex-grow">
+                        <h3 class="font-black text-lg text-slate-900 mb-4 flex items-center gap-2">
+                            📊 실시간 실험 통계
+                        </h3>
+                        
+                        <!-- 주사위 테이블 -->
+                        <div id="stats-dice-table" class="stats-table">
+                            <div class="grid grid-cols-4 gap-4 text-center">
+                                <div class="bg-sky-50/50 p-3 rounded-2xl border border-sky-100/30">
+                                    <span class="text-xs text-slate-500 block font-bold">총 던진 횟수</span>
+                                    <span id="dice-total" class="text-xl font-extrabold text-sky-600">0</span>
+                                </div>
+                                <div class="bg-slate-50 p-3 rounded-2xl">
+                                    <span class="text-xs text-slate-500 block font-bold">6의 눈 (🎲6)</span>
+                                    <span id="dice-six-cnt" class="text-xl font-extrabold text-slate-800">0</span>
+                                </div>
+                                <div class="bg-slate-50 p-3 rounded-2xl">
+                                    <span class="text-xs text-slate-500 block font-bold">다른 눈 (1~5)</span>
+                                    <span id="dice-other-cnt" class="text-xl font-extrabold text-slate-800">0</span>
+                                </div>
+                                <div class="bg-sky-50 p-3 rounded-2xl border border-sky-100/30">
+                                    <span class="text-xs text-sky-700 block font-bold">측정 상대도수</span>
+                                    <span id="dice-relative-freq-lbl" class="text-xl font-extrabold text-sky-600 mt-1 block">0%</span>
+                                </div>
+                            </div>
+
+                            <div class="mt-6 border-t border-slate-100 pt-4">
+                                <h4 class="text-sm font-black text-slate-800 mb-2">현재까지 측정된 상대도수</h4>
+                                <div class="space-y-3">
+                                    <div>
+                                        <div class="flex justify-between text-xs font-bold mb-1">
+                                            <span>6의 눈(🎲)이 차지하는 실제 비율(상대도수)</span>
+                                            <span id="dice-six-ratio" class="text-sky-600 font-extrabold">0%</span>
+                                        </div>
+                                        <div class="w-full bg-slate-100 h-5 rounded-full overflow-hidden relative border border-slate-200/50">
+                                            <div id="dice-six-bar" class="bg-gradient-to-r from-sky-400 to-blue-500 h-full transition-all duration-300" style="width: 0%"></div>
+                                            <!-- 이론적 확률 보조선 표시 -->
+                                            <div id="dice-theory-marker" class="absolute top-0 bottom-0 w-0.5 bg-rose-500" style="left: 16.67%;"></div>
+                                        </div>
+                                        <div class="flex justify-between items-center text-[10px] text-slate-400 mt-1">
+                                            <span>0%</span>
+                                            <span class="text-rose-500 font-black">▲ 이론적 기준선 (약 16.7%)</span>
+                                            <span>100%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 확률 수렴 과정 라인 차트 -->
+                    <div class="bg-white p-6 rounded-3xl shadow-md border border-slate-100 mt-6">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4">
+                            <div>
+                                <h3 class="font-black text-lg text-slate-900">📈 확률의 실시간 수렴 곡선</h3>
+                                <p class="text-xs text-slate-500 font-medium">실험을 많이 반복해 나갈수록 6의 눈이 나온 비율이 빨간 점선에 어떻게 달라붙는지 지켜보세요.</p>
+                            </div>
+                        </div>
+                        <div class="h-60 relative">
+                            <canvas id="convergenceChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. PRACTICE TAB (개념 정의 텍스트 다듬기 및 문제 2 힌트 축소 대수술) -->
+        <section id="content-practice" class="tab-content hidden space-y-6">
+            <!-- 확률 개념 공식화 카드 (달러 기호 제거로 텍스트 완성도 최적화) -->
+            <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-md border border-slate-100">
+                <div class="bg-gradient-to-r from-sky-100 to-indigo-50 p-6 rounded-2xl border border-sky-200">
+                    <h3 class="text-lg sm:text-xl font-black text-slate-900 flex items-center gap-2 mb-3">
+                        <span>📖</span> 경우의 수 비율로서의 확률 개념 잡기
+                    </h3>
+                    <p class="text-xs sm:text-sm text-slate-700 leading-relaxed font-semibold">
+                        어떤 실험이나 관찰에서 각 경우가 일어날 가능성이 모두 같다고 할 때, 일어날 수 있는 <span class="text-indigo-600">모든 경우의 수가 n</span>이고, 어떤 <span class="text-amber-600">사건 A가 일어나는 경우의 수가 a</span>이면 사건 A가 일어날 확률 p는 다음과 같습니다.
+                    </p>
+                    
+                    <!-- 수려한 CSS 분수 공식 레이아웃 -->
+                    <div class="flex items-center justify-center gap-4 my-6 bg-white p-4 rounded-xl shadow-inner border border-sky-100 max-w-lg mx-auto font-black">
+                        <span class="text-xl sm:text-2xl text-slate-800">확률 ( p )</span>
+                        <span class="text-2xl text-slate-400">=</span>
+                        <div class="flex flex-col items-center text-xs sm:text-sm text-slate-800">
+                            <span class="border-b-2 border-slate-700 pb-1.5 px-3 text-amber-600">사건 A가 일어나는 경우의 수 ( a )</span>
+                            <span class="pt-1.5 px-3 text-indigo-600">모든 경우의 수 ( n )</span>
+                        </div>
+                        <span class="text-2xl text-slate-400">=</span>
+                        <div class="flex flex-col items-center text-lg text-slate-800">
+                            <span class="border-b-2 border-slate-700 pb-1 px-3 text-amber-600">a</span>
+                            <span class="pt-1 px-3 text-indigo-600">n</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 실천 문제 1번 (주머니 홀수 공 꺼내기 - 고정 보존) -->
+            <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-md border border-slate-100 space-y-6">
+                <div class="border-b border-slate-100 pb-3">
+                    <span class="inline-block bg-sky-100 text-sky-800 text-[10px] font-black px-2.5 py-0.5 rounded-full mb-1">실천 문제 1</span>
+                    <h3 class="text-base sm:text-lg font-black text-slate-900 leading-relaxed">
+                        1부터 9까지의 자연수가 각각 적힌 모양과 크기가 같은 공 9개가 들어 있는 주머니에서 한 개의 공을 임의로 꺼낼 때, 홀수가 적힌 공이 나올 확률을 구하시오.
+                    </h3>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-6 items-center">
+                    <!-- 왼쪽: 조작 영역 -->
+                    <div class="bg-gradient-to-br from-sky-50 to-blue-50/50 p-6 rounded-2xl border border-sky-100 flex flex-col items-center shadow-inner relative">
+                        <h4 class="text-xs font-black text-sky-700 mb-4">🔮 주머니 속 공을 만져보거나 홀수를 표시해 세어보세요!</h4>
+                        
+                        <!-- 가상 주머니 컨테이너 -->
+                        <div class="w-64 h-56 bg-sky-100/60 rounded-[50%_50%_45%_45%] border-4 border-dashed border-sky-400 p-6 flex flex-wrap gap-3 justify-center items-center shadow-md relative overflow-hidden">
+                            <!-- 1 ~ 9 공 렌더링 -->
+                            <button onclick="clickPracticeBall(1)" id="p-ball-1" class="p-ball w-12 h-12 rounded-full bg-white border-2 border-slate-300 font-black text-lg shadow-sm flex items-center justify-center transition-all active:scale-90 hover:scale-105">1</button>
+                            <button onclick="clickPracticeBall(2)" id="p-ball-2" class="p-ball w-12 h-12 rounded-full bg-white border-2 border-slate-300 font-black text-lg shadow-sm flex items-center justify-center transition-all active:scale-90 hover:scale-105">2</button>
+                            <button onclick="clickPracticeBall(3)" id="p-ball-3" class="p-ball w-12 h-12 rounded-full bg-white border-2 border-slate-300 font-black text-lg shadow-sm flex items-center justify-center transition-all active:scale-90 hover:scale-105">3</button>
+                            <button onclick="clickPracticeBall(4)" id="p-ball-4" class="p-ball w-12 h-12 rounded-full bg-white border-2 border-slate-300 font-black text-lg shadow-sm flex items-center justify-center transition-all active:scale-90 hover:scale-105">4</button>
+                            <button onclick="clickPracticeBall(5)" id="p-ball-5" class="p-ball w-12 h-12 rounded-full bg-white border-2 border-slate-300 font-black text-lg shadow-sm flex items-center justify-center transition-all active:scale-90 hover:scale-105">5</button>
+                            <button onclick="clickPracticeBall(6)" id="p-ball-6" class="p-ball w-12 h-12 rounded-full bg-white border-2 border-slate-300 font-black text-lg shadow-sm flex items-center justify-center transition-all active:scale-90 hover:scale-105">6</button>
+                            <button onclick="clickPracticeBall(7)" id="p-ball-7" class="p-ball w-12 h-12 rounded-full bg-white border-2 border-slate-300 font-black text-lg shadow-sm flex items-center justify-center transition-all active:scale-90 hover:scale-105">7</button>
+                            <button onclick="clickPracticeBall(8)" id="p-ball-8" class="p-ball w-12 h-12 rounded-full bg-white border-2 border-slate-300 font-black text-lg shadow-sm flex items-center justify-center transition-all active:scale-90 hover:scale-105">8</button>
+                            <button onclick="clickPracticeBall(9)" id="p-ball-9" class="p-ball w-12 h-12 rounded-full bg-white border-2 border-slate-300 font-black text-lg shadow-sm flex items-center justify-center transition-all active:scale-90 hover:scale-105">9</button>
+                        </div>
+                        
+                        <!-- 스위치 컨트롤 -->
+                        <button onclick="toggleHighlightOdds()" class="mt-4 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white font-black text-xs rounded-xl transition shadow active:scale-95">
+                            ✨ 홀수 공 눈에 띄게 표시하기
+                        </button>
+                    </div>
+
+                    <!-- 오른쪽: 문항 제출 카드 -->
+                    <div class="space-y-4">
+                        <h4 class="font-bold text-slate-800 text-sm">답안을 선택하세요</h4>
+                        <div class="grid grid-cols-2 gap-3">
+                            <button onclick="submitProblem1('4/9')" class="p1-opt-btn py-3 px-4 bg-slate-50 border border-slate-200 hover:border-sky-400 rounded-xl font-bold text-sm transition text-center shadow-sm">
+                                ① &nbsp;<span class="underline"> 4 </span><br>&nbsp;&nbsp;&nbsp;&nbsp;9
+                            </button>
+                            <button onclick="submitProblem1('5/9')" class="p1-opt-btn py-3 px-4 bg-slate-50 border border-slate-200 hover:border-sky-400 rounded-xl font-bold text-sm transition text-center shadow-sm">
+                                ② &nbsp;<span class="underline"> 5 </span><br>&nbsp;&nbsp;&nbsp;&nbsp;9
+                            </button>
+                            <button onclick="submitProblem1('1/2')" class="p1-opt-btn py-3 px-4 bg-slate-50 border border-slate-200 hover:border-sky-400 rounded-xl font-bold text-sm transition text-center shadow-sm">
+                                ③ &nbsp;<span class="underline"> 1 </span><br>&nbsp;&nbsp;&nbsp;&nbsp;2
+                            </button>
+                            <button onclick="submitProblem1('2/3')" class="p1-opt-btn py-3 px-4 bg-slate-50 border border-slate-200 hover:border-sky-400 rounded-xl font-bold text-sm transition text-center shadow-sm">
+                                ④ &nbsp;<span class="underline"> 2 </span><br>&nbsp;&nbsp;&nbsp;&nbsp;3
+                            </button>
+                        </div>
+                        <div id="p1-feedback" class="hidden p-4 rounded-xl text-sm font-semibold"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 실천 문제 2번 (주사위 2개 눈의 합 8 - 힌트 축소 전면 리팩토링) -->
+            <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-md border border-slate-100 space-y-6">
+                <div class="border-b border-slate-100 pb-3">
+                    <span class="inline-block bg-sky-100 text-sky-800 text-[10px] font-black px-2.5 py-0.5 rounded-full mb-1">실천 문제 2</span>
+                    <h3 class="text-base sm:text-lg font-black text-slate-900 leading-relaxed">
+                        서로 다른 두 개의 주사위를 동시에 던질 때, 나오는 두 눈의 수의 합이 8일 확률을 구하시오.
+                    </h3>
+                </div>
+
+                <div class="grid lg:grid-cols-12 gap-6 items-start">
+                    <!-- 왼쪽: 6x6 인터랙티브 그리드 (힌트 요소 삭제) -->
+                    <div class="lg:col-span-7 bg-slate-50 p-4 rounded-2xl border border-slate-200 overflow-x-auto shadow-inner flex flex-col items-center">
+                        <div class="mb-3 text-center">
+                            <span class="inline-block bg-sky-200 text-sky-800 text-[10px] font-black px-2 py-0.5 rounded-md">탐색 보드</span>
+                            <h4 class="text-xs font-black text-slate-700 mt-1">두 주사위 눈의 합이 8이 되는 순서쌍들을 보드에서 찾아 선택해 보세요.</h4>
+                            <p class="text-[10px] text-slate-400 mt-0.5">칸을 클릭하면 선택(하늘색)이 토글됩니다. 전체 36가지 경우 중 원하는 칸을 모두 표시해 보세요.</p>
+                        </div>
+                        
+                        <!-- 6x6 표 -->
+                        <div class="inline-block border-2 border-slate-300 rounded-xl overflow-hidden bg-white">
+                            <table class="border-collapse text-center text-xs sm:text-sm">
+                                <thead>
+                                    <tr class="bg-slate-100">
+                                        <th class="w-10 h-10 border-r border-b border-slate-300 bg-slate-200 text-[9px] font-black p-1 leading-none">주사위 1 <br>＼ 주사위 2</th>
+                                        <th class="w-10 h-10 border-r border-b border-slate-300 font-extrabold text-sky-600">1</th>
+                                        <th class="w-10 h-10 border-r border-b border-slate-300 font-extrabold text-sky-600">2</th>
+                                        <th class="w-10 h-10 border-r border-b border-slate-300 font-extrabold text-sky-600">3</th>
+                                        <th class="w-10 h-10 border-r border-b border-slate-300 font-extrabold text-sky-600">4</th>
+                                        <th class="w-10 h-10 border-r border-b border-slate-300 font-extrabold text-sky-600">5</th>
+                                        <th class="w-10 h-10 border-b border-slate-300 font-extrabold text-sky-600">6</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <script>
+                                        for (let r = 1; r <= 6; r++) {
+                                            document.write('<tr>');
+                                            // 행 헤더
+                                            document.write(`<td class="w-10 h-10 border-r border-b border-slate-300 bg-slate-100 font-extrabold text-indigo-600">${r}</td>`);
+                                            for (let c = 1; c <= 6; c++) {
+                                                const isLastCol = (c === 6);
+                                                const isLastRow = (r === 6);
+                                                const cellClass = `p-cell w-10 h-10 border-r border-b border-slate-200 font-black cursor-pointer hover:bg-sky-50 transition-colors`;
+                                                document.write(`<td id="p-cell-${r}-${c}" onclick="clickPracticeGrid(${r},${c})" class="${cellClass} ${isLastCol ? 'border-r-0' : ''} ${isLastRow ? 'border-b-0' : ''}">(${r},${c})</td>`);
+                                            }
+                                            document.write('</tr>');
+                                        }
+                                    </script>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- 힌트가 노출되지 않도록 단순히 선택 개수 피드백만 노출 -->
+                        <div class="mt-4 flex items-center justify-between w-full max-w-sm text-xs font-black">
+                            <span class="text-slate-600">현재 내가 선택한 칸:</span>
+                            <span class="bg-sky-100 text-sky-800 px-3 py-1 rounded-full"><span id="p2-selected-count">0</span>개 선택됨</span>
+                        </div>
+                    </div>
+
+                    <!-- 오른쪽: 문항 제출 카드 -->
+                    <div class="lg:col-span-5 space-y-4">
+                        <h4 class="font-bold text-slate-800 text-sm">답안을 선택하세요</h4>
+                        <div class="grid grid-cols-2 gap-3">
+                            <button onclick="submitProblem2('1/6')" class="p2-opt-btn py-3 px-4 bg-slate-50 border border-slate-200 hover:border-sky-400 rounded-xl font-bold text-sm transition text-center shadow-sm">
+                                ① &nbsp;<span class="underline"> 1 </span><br>&nbsp;&nbsp;&nbsp;&nbsp;6
+                            </button>
+                            <button onclick="submitProblem2('5/36')" class="p2-opt-btn py-3 px-4 bg-slate-50 border border-slate-200 hover:border-sky-400 rounded-xl font-bold text-sm transition text-center shadow-sm">
+                                ② &nbsp;<span class="underline"> 5 </span><br>&nbsp;&nbsp;&nbsp;&nbsp;36
+                            </button>
+                            <button onclick="submitProblem2('1/12')" class="p2-opt-btn py-3 px-4 bg-slate-50 border border-slate-200 hover:border-sky-400 rounded-xl font-bold text-sm transition text-center shadow-sm">
+                                ③ &nbsp;<span class="underline"> 1 </span><br>&nbsp;&nbsp;&nbsp;&nbsp;12
+                            </button>
+                            <button onclick="submitProblem2('7/36')" class="p2-opt-btn py-3 px-4 bg-slate-50 border border-slate-200 hover:border-sky-400 rounded-xl font-bold text-sm transition text-center shadow-sm">
+                                ④ &nbsp;<span class="underline"> 7 </span><br>&nbsp;&nbsp;&nbsp;&nbsp;36
+                            </button>
+                        </div>
+                        <div id="p2-feedback" class="hidden p-4 rounded-xl text-sm font-semibold text-slate-700"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. DISCUSSION TAB (우리의 생각 나누기 - 패들렛 연동 최적화 보존) -->
+        <section id="content-board" class="tab-content hidden space-y-6">
+            <div class="bg-white p-6 rounded-3xl shadow-md border border-slate-100 flex flex-col min-h-[900px] space-y-6">
+                
+                <!-- 오늘의 탐구 미션 게시판 -->
+                <div class="bg-gradient-to-r from-sky-50 to-blue-50 p-6 rounded-3xl border border-sky-100 space-y-4 shadow-sm">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-sky-200/50 pb-3">
+                        <h4 class="font-black text-slate-900 flex items-center gap-2 text-base sm:text-lg">
+                            <span class="p-1 bg-white rounded-lg shadow-sm">✏️</span> 오늘의 수학 탐구 미션
+                        </h4>
+                        <a href="https://padlet.com/kyrnd323/padlet-cf3qdnn8sy3o0dfj" target="_blank" class="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 active:scale-95 text-white font-black rounded-2xl transition flex items-center justify-center gap-1.5 text-xs shadow-md">
+                            🔗 새 창으로 패들렛 크게 열기 ↗
+                        </a>
+                    </div>
+                    <p class="text-xs sm:text-sm text-slate-700 leading-relaxed font-semibold">
+                        주사위 실험 결과를 관찰하며 생각한 내용들을 바탕으로, <b>아래 패들렛 보드의 (+) 버튼을 눌러 자신의 학번, 이름과 함께 다음 3가지 질문에 답해봅시다!</b>
+                    </p>
+
+                    <!-- 질문 카드 3개 배치 (세로형 flex-col 레이아웃) -->
+                    <div class="flex flex-col gap-4 pt-1">
+                        <!-- 질문 1 -->
+                        <div class="bg-white p-5 rounded-2xl border border-sky-100 shadow-sm flex gap-4 transition-all hover:border-sky-200">
+                            <span class="flex items-center justify-center w-8 h-8 rounded-full bg-sky-500 text-white font-black text-sm shrink-0 shadow-md">1</span>
+                            <div>
+                                <p class="text-[10px] text-sky-500 font-extrabold uppercase tracking-wider">조별 실험 결과 관찰</p>
+                                <p class="text-sm sm:text-base font-bold text-slate-800 mt-1.5 leading-relaxed">
+                                    우리 조가 직접 주사위를 던진 <span class="text-sky-600 font-black">총 주사위 횟수</span>와, 6의 눈이 나오는 사건의 <span class="text-sky-600 font-black">상대도수(실제 비율)</span>의 값은 각각 얼마인가요?
+                                </p>
+                            </div>
+                        </div>
+                        <!-- 질문 2 -->
+                        <div class="bg-white p-5 rounded-2xl border border-sky-100 shadow-sm flex gap-4 transition-all hover:border-sky-200">
+                            <span class="flex items-center justify-center w-8 h-8 rounded-full bg-sky-500 text-white font-black text-sm shrink-0 shadow-md">2</span>
+                            <div>
+                                <p class="text-[10px] text-sky-500 font-extrabold uppercase tracking-wider">확률과 상대도수의 관계</p>
+                                <p class="text-sm sm:text-base font-bold text-slate-800 mt-1.5 leading-relaxed">
+                                    주사위 눈이 6이 나오는 확률(경우의 수 비율)과 1번 질문에서 구한 상대도수의 값 사이에는 어떤 관계가 있을까요?
+                                </p>
+                            </div>
+                        </div>
+                        <!-- 질문 3 -->
+                        <div class="bg-white p-5 rounded-2xl border border-sky-100 shadow-sm flex gap-4 transition-all hover:border-sky-200">
+                            <span class="flex items-center justify-center w-8 h-8 rounded-full bg-sky-500 text-white font-black text-sm shrink-0 shadow-md">3</span>
+                            <div>
+                                <p class="text-[10px] text-sky-500 font-extrabold uppercase tracking-wider">두 가지 확률 구하기 방법 비교</p>
+                                <p class="text-sm sm:text-base font-bold text-slate-800 mt-1.5 leading-relaxed">
+                                    상대도수로서의 확률과 경우의 수 비율로서의 확률의 차이점과 두 가지 방법 중에 어떤 방법이 더 편리할까요?
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 실시간 Iframe 패들렛 (전면 풀사이즈) -->
+                <div class="w-full flex-grow rounded-3xl overflow-hidden border border-slate-200 bg-slate-50 shadow-inner relative min-h-[500px]">
+                    <iframe src="https://padlet.com/embed/cf3qdnn8sy3o0dfj" frameborder="0" allow="camera;microphone;geolocation" class="absolute inset-0 w-full h-full rounded-3xl"></iframe>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 py-8 px-4 text-center text-xs mt-12 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto space-y-2">
+            <p class="font-bold text-slate-300">🎲 생각하고 조작하는 중학교 2학년 수학실험 소프트웨어</p>
+            <p>크롬북, 스마트 태블릿, 일반 데스크톱 환경 모두에서 직관적인 조작형 확률 개념 수업이 가능하도록 설계되었습니다.</p>
+            <p class="text-slate-600">Copyright &copy; 2026 수학 교실 실험실. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <!-- JS Logic -->
+    <script>
+        // 전역 상태 변수들
+        let activeTab = 'intro';
+        
+        // 주사위 실험 관련 데이터
+        let diceSimCount = 100;
+        let diceTotal = 0;
+        let diceSixes = 0;
+        let diceOthers = 0;
+        const diceBias = 1/6; // 6의 눈이 나올 확률 = 1/6
+        let diceDataHistory = []; // 수렴 그래프용 누적 기록
+
+        // Chart.js 인스턴스
+        let convergenceChart = null;
+
+        // 실천 문제 관련 상태 변수들
+        let isHighlightOddsActive = false;
+        let p2SelectedGridSet = new Set(); // 사용자가 선택한 칸들을 담는 Set (비정답 실시간 피드백 무력화용)
+
+        // 전역 알림 기능
+        function showToast(message, isSuccess = true) {
+            const toast = document.createElement('div');
+            toast.className = `fixed bottom-5 right-5 ${isSuccess ? 'bg-emerald-600 border-emerald-700' : 'bg-rose-600 border-rose-700'} border text-white px-6 py-3.5 rounded-2xl shadow-2xl font-bold transition-all transform translate-y-0 z-[9999] text-sm flex items-center gap-2`;
+            toast.innerHTML = `<span>✨</span> ${message}`;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 500);
+            }, 3000);
+        }
+
+        // 탭 전환 시스템
+        function switchTab(tabId) {
+            activeTab = tabId;
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('border-sky-500', 'text-sky-600');
+                btn.classList.add('border-transparent', 'text-slate-500');
+            });
+            document.getElementById(`tab-${tabId}`).classList.remove('border-transparent', 'text-slate-500');
+            document.getElementById(`tab-${tabId}`).classList.add('border-sky-500', 'text-sky-600');
+
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+            document.getElementById(`content-${tabId}`).classList.remove('hidden');
+
+            if (tabId === 'experiment' && convergenceChart) {
+                setTimeout(() => {
+                    convergenceChart.resize();
+                    convergenceChart.update();
+                }, 50);
+            }
+        }
+
+        // 미니 퀴즈 채점 시스템
+        function checkQuizAnswer(quizId, isCorrect) {
+            const feedback = document.getElementById(`${quizId}-feedback`);
+            feedback.classList.remove('hidden');
+            if (quizId === 'quiz1') {
+                if (isCorrect) {
+                    feedback.innerHTML = "🎉 <strong>정답입니다!</strong> 주사위를 단 10번만 던질 때는 6의 눈이 한 번도 나오지 않을 확률이 약 16.1%나 됩니다. 이처럼 실험 횟수가 적을 때는 예상했던 확률과 다른 돌발적인 결과가 충분히 벌어질 수 있어요.";
+                    feedback.className = "mt-3 p-3 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl text-xs leading-relaxed font-semibold";
+                } else {
+                    feedback.innerHTML = "💡 <strong>한 번 더 생각해 보세요!</strong> 주사위의 6의 눈이 나올 확률이 1/6이라 하더라도, 각 시행은 매번 독립적이기 때문에 10번 모두 다른 눈(1~5)만 나올 가능성도 충분히 있습니다. 횟수가 적을 때는 우연적인 영향이 큽니다.";
+                    feedback.className = "mt-3 p-3 bg-rose-50 text-rose-700 border border-rose-200 rounded-xl text-xs leading-relaxed font-semibold";
+                }
+            } else if (quizId === 'quiz2') {
+                if (isCorrect) {
+                    feedback.innerHTML = "🎉 <strong>정답입니다!</strong> 맞아요. 주사위를 던지는 횟수를 무수히 늘리면, 개별 던지기의 돌발적인 우연들이 상쇄되면서 점차 특정한 '수렴 기준선'으로 안착하게 됩니다. 이 약속된 정착지의 값이 과연 몇 퍼센트일지 실험 탭에서 눈으로 관찰해 보세요!";
+                    feedback.className = "mt-3 p-3 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl text-xs leading-relaxed font-semibold";
+                } else {
+                    feedback.innerHTML = "💡 <strong>틀렸습니다!</strong> 개별 한 판은 완전히 우작위가 맞지만, 1만 번과 같이 거대한 횟수로 전체 비율을 모으면 신기하게도 요동을 멈추고 하나의 '질서 정연한 일정한 값'에 도달하게 됩니다. 직접 실험실에서 이 곡선을 목격해 보세요!";
+                    feedback.className = "mt-3 p-3 bg-rose-50 text-rose-700 border border-rose-200 rounded-xl text-xs leading-relaxed font-semibold";
+                }
+            }
+        }
+
+        // ==================== [실험 및 입력 영역 토글 시스템] ====================
+        function toggleDiceMode(mode) {
+            const btnVirtual = document.getElementById('btn-mode-virtual');
+            const btnManual = document.getElementById('btn-mode-manual');
+            const secVirtual = document.getElementById('dice-section-virtual');
+            const secManual = document.getElementById('dice-section-manual');
+
+            if (mode === 'virtual') {
+                btnVirtual.className = "flex-1 pb-2 text-sm font-black border-b-4 border-amber-500 text-amber-600 transition-all";
+                btnManual.className = "flex-1 pb-2 text-sm font-black border-b-4 border-transparent text-slate-400 hover:text-slate-600 transition-all";
+                secVirtual.classList.remove('hidden');
+                secManual.classList.add('hidden');
+            } else {
+                btnVirtual.className = "flex-1 pb-2 text-sm font-black border-b-4 border-transparent text-slate-400 hover:text-slate-600 transition-all";
+                btnManual.className = "flex-1 pb-2 text-sm font-black border-b-4 border-amber-500 text-amber-600 transition-all";
+                secVirtual.classList.add('hidden');
+                secManual.classList.remove('hidden');
+            }
+        }
+
+        // ==================== [주사위 SVG 렌더링 시스템] ====================
+        function renderDiceFace(num) {
+            const el = document.getElementById('dice-face-svg');
+            if (!el) return;
+            
+            const getDot = (cx, cy, color = '#1e293b') => `<circle cx="${cx}" cy="${cy}" r="7" fill="${color}" />`;
+            let dots = '';
+
+            if (num === 1) {
+                dots = `<circle cx="50" cy="50" r="13" fill="#f43f5e" />`;
+            } else if (num === 2) {
+                dots = getDot(25, 25) + getDot(75, 75);
+            } else if (num === 3) {
+                dots = getDot(25, 25) + getDot(50, 50) + getDot(75, 75);
+            } else if (num === 4) {
+                dots = getDot(25, 25) + getDot(75, 25) + getDot(25, 75) + getDot(75, 75);
+            } else if (num === 5) {
+                dots = getDot(25, 25) + getDot(75, 25) + getDot(25, 75) + getDot(75, 75) + getDot(50, 50);
+            } else if (num === 6) {
+                const highlightColor = '#f59e0b';
+                dots = getDot(25, 25, highlightColor) + getDot(25, 50, highlightColor) + getDot(25, 75, highlightColor) +
+                       getDot(75, 25, highlightColor) + getDot(75, 50, highlightColor) + getDot(75, 75, highlightColor);
+            }
+            el.innerHTML = dots;
+        }
+
+        // 주사위 롤링 애니메이션 기능
+        function animateDice(finalNum, callback) {
+            const diceEl = document.getElementById('dice-element');
+            let count = 0;
+            const maxTicks = 10;
+            
+            const interval = setInterval(() => {
+                const tempNum = Math.floor(Math.random() * 6) + 1;
+                renderDiceFace(tempNum);
+                
+                const randomAngle = Math.random() * 40 - 20;
+                const randomScale = 0.9 + Math.random() * 0.15;
+                diceEl.style.transform = `rotate(${randomAngle}deg) scale(${randomScale})`;
+                
+                count++;
+                if (count >= maxTicks) {
+                    clearInterval(interval);
+                    renderDiceFace(finalNum);
+                    diceEl.style.transform = `rotate(0deg) scale(1)`;
+                    if (callback) callback();
+                }
+            }, 60);
+        }
+
+        // ==================== [주사위 수동 및 스텝 컨트롤러] ====================
+        function adjustManualDice10(diff) {
+            const input = document.getElementById('manual-dice-sixes');
+            let val = parseInt(input.value) || 0;
+            val += diff;
+            if (val < 0) val = 0;
+            if (val > 10) val = 10;
+            input.value = val;
+            validateManualDice10(input);
+        }
+
+        // 가상 투척 선택기
+        function setSimCount(cnt) {
+            diceSimCount = cnt;
+            document.getElementById('input-dice-custom').value = cnt;
+            updateCountButtonStyles('count-btn', cnt);
+        }
+
+        function updateCountButtonStyles(className, selectedVal) {
+            document.querySelectorAll(`.${className}`).forEach(btn => {
+                const text = btn.innerText.replace('회 던지기', '');
+                if (parseInt(text) === selectedVal) {
+                    btn.className = `${className} py-3 text-sm font-bold rounded-lg bg-sky-600 text-white transition`;
+                } else {
+                    btn.className = `${className} py-3 text-sm font-bold rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition`;
+                }
+            });
+        }
+
+        // [수동 1회 기록 추가]
+        function recordManualDice(isSix) {
+            diceTotal = 0;
+            diceSixes = 0;
+            diceOthers = 0;
+            diceDataHistory = [];
+
+            diceTotal++;
+            let displayNum = 6;
+            if (isSix) {
+                diceSixes++;
+            } else {
+                diceOthers++;
+                displayNum = Math.floor(Math.random() * 5) + 1;
+            }
+            
+            diceDataHistory.push({
+                trial: diceTotal,
+                ratio: parseFloat((diceSixes / diceTotal).toFixed(4))
+            });
+
+            animateDice(displayNum, () => {
+                document.getElementById('dice-text').innerText = `단발 기록! 결과: ${isSix ? '6의 눈 🎲' : '다른 눈(1~5)'}`;
+                updateDiceUI();
+                updateChart();
+            });
+            showToast(`실제 던진 결과 1회(${isSix ? '6의 눈' : '다른 눈'})가 등록되었습니다.`);
+        }
+
+        // [수동 10회 검증]
+        function validateManualDice10(input) {
+            let val = parseInt(input.value);
+            if (isNaN(val) || val < 0) val = 0;
+            if (val > 10) val = 10;
+            input.value = val;
+            document.getElementById('manual-dice-others').value = 10 - val;
+        }
+
+        // [수동 10회 일괄 등록]
+        function submitManualDice10() {
+            const sixesVal = parseInt(document.getElementById('manual-dice-sixes').value);
+            const othersVal = parseInt(document.getElementById('manual-dice-others').value);
+
+            if (isNaN(sixesVal) || (sixesVal + othersVal) !== 10) {
+                showToast("값의 합이 정확히 10이어야 합니다.", false);
+                return;
+            }
+
+            diceTotal = 0;
+            diceSixes = 0;
+            diceOthers = 0;
+            diceDataHistory = [];
+
+            let tempSixes = 0;
+            let tempTotal = 0;
+
+            let seq = [];
+            for (let i = 0; i < sixesVal; i++) seq.push(true);
+            for (let i = 0; i < othersVal; i++) seq.push(false);
+            seq.sort(() => Math.random() - 0.5);
+
+            seq.forEach(isSix => {
+                tempTotal++;
+                if (isSix) tempSixes++;
+                diceDataHistory.push({
+                    trial: tempTotal,
+                    ratio: parseFloat((tempSixes / tempTotal).toFixed(4))
+                });
+            });
+
+            diceTotal = 10;
+            diceSixes = sixesVal;
+            diceOthers = othersVal;
+
+            const lastRollIsSix = seq[seq.length - 1];
+            const finalFaceNum = lastRollIsSix ? 6 : (Math.floor(Math.random() * 5) + 1);
+
+            animateDice(finalFaceNum, () => {
+                document.getElementById('dice-text').innerText = `단발 10회 결과! (6의 눈: ${sixesVal}회, 다른 눈: ${othersVal}회)`;
+                updateDiceUI();
+                updateChart();
+            });
+            showToast(`실제 주사위 10회 던지기 실험 정보가 새롭게 기록되었습니다.`);
+        }
+
+        // [가상 대량 시뮬레이션 가동]
+        function runDiceExperiment() {
+            const customVal = parseInt(document.getElementById('input-dice-custom').value);
+            if (isNaN(customVal) || customVal < 10) {
+                showToast("던질 횟수를 최소 10회 이상으로 올바르게 입력해 주세요.", false);
+                return;
+            }
+            diceSimCount = Math.min(customVal, 10000);
+
+            document.getElementById('dice-text').innerText = "가상 주사위들을 초고속으로 돌리는 중...";
+            
+            const finalDummyFace = Math.floor(Math.random() * 6) + 1;
+            animateDice(finalDummyFace, () => {
+                executeDiceSimulation(diceSimCount);
+            });
+        }
+
+        function executeDiceSimulation(count) {
+            for (let i = 0; i < count; i++) {
+                diceTotal++;
+                const rolled = Math.floor(Math.random() * 6) + 1;
+                if (rolled === 6) {
+                    diceSixes++;
+                } else {
+                    diceOthers++;
+                }
+
+                if (diceTotal < 100 || diceTotal % Math.ceil(diceTotal / 100) === 0 || i === count - 1) {
+                    diceDataHistory.push({
+                        trial: diceTotal,
+                        ratio: parseFloat((diceSixes / diceTotal).toFixed(4))
+                    });
+                }
+            }
+
+            document.getElementById('dice-text').innerText = `총 ${diceSimCount}회의 가상 주사위 투척 실험이 누적 반영되었습니다!`;
+            updateDiceUI();
+            updateChart();
+        }
+
+        // UI 갱신 데코레이터
+        function updateDiceUI() {
+            document.getElementById('dice-total').innerText = diceTotal;
+            document.getElementById('dice-six-cnt').innerText = diceSixes;
+            document.getElementById('dice-other-cnt').innerText = diceOthers;
+
+            const ratio = diceTotal > 0 ? ((diceSixes / diceTotal) * 100).toFixed(2) : 0;
+            document.getElementById('dice-six-ratio').innerText = `${ratio}%`;
+            document.getElementById('dice-six-bar').style.width = `${ratio}%`;
+            
+            document.getElementById('dice-relative-freq-lbl').innerText = diceTotal > 0 ? `${ratio}%` : '0%';
+        }
+
+        // 초기화 루틴
+        function resetDiceExperiment() {
+            diceTotal = 0;
+            diceSixes = 0;
+            diceOthers = 0;
+            diceDataHistory = [];
+            
+            renderDiceFace(1);
+            document.getElementById('dice-text').innerText = "새로운 실험 환경이 준비되었습니다!";
+            updateDiceUI();
+            updateChart();
+            showToast("실험 통계 및 차트 기록이 완벽히 초기화되었습니다.");
+        }
+
+        // ==================== [실천 문제 1번 (주머니 홀수 공) 로직] ====================
+        function clickPracticeBall(num) {
+            const ball = document.getElementById(`p-ball-${num}`);
+            if (ball.classList.contains('bg-amber-400')) {
+                ball.className = "p-ball w-12 h-12 rounded-full bg-white border-2 border-slate-300 font-black text-lg shadow-sm flex items-center justify-center transition-all active:scale-90 hover:scale-105";
+            } else {
+                ball.className = "p-ball w-12 h-12 rounded-full bg-amber-400 border-2 border-amber-600 text-amber-950 font-black text-lg shadow-sm flex items-center justify-center transition-all active:scale-90 hover:scale-105";
+            }
+        }
+
+        function toggleHighlightOdds() {
+            isHighlightOddsActive = !isHighlightOddsActive;
+            
+            for (let i = 1; i <= 9; i++) {
+                const ball = document.getElementById(`p-ball-${i}`);
+                if (isHighlightOddsActive) {
+                    if (i % 2 !== 0) {
+                        // 홀수 하이라이트 (오렌지)
+                        ball.className = "p-ball w-12 h-12 rounded-full bg-orange-400 border-2 border-orange-600 text-white font-black text-xl shadow-md ring-4 ring-orange-100 flex items-center justify-center transition-all scale-105 duration-300";
+                    } else {
+                        // 짝수 비활성화 감쇠
+                        ball.className = "p-ball w-12 h-12 rounded-full bg-slate-100 border-2 border-slate-200 text-slate-300 font-bold text-xs shadow-none flex items-center justify-center transition-all opacity-40 duration-300";
+                    }
+                } else {
+                    // 원래 기본 스타일 환원
+                    ball.className = "p-ball w-12 h-12 rounded-full bg-white border-2 border-slate-300 font-black text-lg shadow-sm flex items-center justify-center transition-all active:scale-90 hover:scale-105 duration-300";
+                }
+            }
+        }
+
+        function submitProblem1(answer) {
+            const feedback = document.getElementById('p1-feedback');
+            feedback.classList.remove('hidden');
+            
+            // 모든 선택 단추 초기화 후 선택 하이라이트
+            document.querySelectorAll('.p1-opt-btn').forEach(btn => {
+                btn.classList.remove('border-sky-500', 'bg-sky-50', 'border-rose-500', 'bg-rose-50');
+            });
+
+            if (answer === '5/9') {
+                feedback.innerHTML = "🎉 <strong>정답입니다!</strong><br>주머니에 들어 있는 공은 총 9개(1, 2, 3, 4, 5, 6, 7, 8, 9)이므로 <strong class='text-indigo-600'>모든 경우의 수는 9</strong>입니다.<br>이 중 홀수가 적힌 공은 5개(1, 3, 5, 7, 9)이므로 <strong class='text-amber-600'>홀수가 나올 경우의 수는 5</strong>가 됩니다.<br>따라서 홀수가 나올 확률은 경우의 수의 비율인 <strong>5/9</strong>입니다.";
+                feedback.className = "p-4 bg-emerald-50 text-emerald-800 border-2 border-emerald-200 rounded-2xl text-xs sm:text-sm leading-relaxed shadow-sm";
+                showToast("1번 문제를 맞혔어요! 🐧", true);
+            } else {
+                feedback.innerHTML = "💡 <strong>다시 한번 생각해 보아요!</strong><br>1부터 9까지의 수 중에서 '홀수'의 개수가 총 몇 개인지 직접 세어보고, 주머니 속의 '전체 공 개수'에 대한 분수 비율을 구해 보세요.";
+                feedback.className = "p-4 bg-rose-50 text-rose-800 border-2 border-rose-200 rounded-2xl text-xs sm:text-sm leading-relaxed shadow-sm";
+                showToast("틀렸습니다. 다시 고민해 보세요!", false);
+            }
+        }
+
+        // ==================== [실천 문제 2번 (격자 탐색) 로직 개편] ====================
+        function clickPracticeGrid(r, c) {
+            const key = `${r}-${c}`;
+            const cell = document.getElementById(`p-cell-${r}-${c}`);
+
+            // 힌트를 유발하는 자동 정답 판정을 제거하고, 자유로운 토글 마킹 기능만 수행
+            if (p2SelectedGridSet.has(key)) {
+                p2SelectedGridSet.delete(key);
+                cell.className = "p-cell w-10 h-10 border-r border-b border-slate-200 font-black cursor-pointer hover:bg-sky-50 transition-colors";
+            } else {
+                p2SelectedGridSet.add(key);
+                cell.className = "p-cell w-10 h-10 border-r border-b border-sky-200 bg-sky-100 text-sky-800 font-black cursor-pointer transition-all scale-105 shadow-sm";
+            }
+
+            // 단순 선택된 총 칸 개수만 업데이트
+            document.getElementById('p2-selected-count').innerText = p2SelectedGridSet.size;
+        }
+
+        function submitProblem2(answer) {
+            const feedback = document.getElementById('p2-feedback');
+            feedback.classList.remove('hidden');
+
+            document.querySelectorAll('.p2-opt-btn').forEach(btn => {
+                btn.classList.remove('border-sky-500', 'bg-sky-50', 'border-rose-500', 'bg-rose-50');
+            });
+
+            // 답안 제출시에만 6x6 보드 전체에서 실제 정답 칸(초록)과 사용자 선택 오답 칸(빨강)을 입체적으로 교정/시각화
+            for (let r = 1; r <= 6; r++) {
+                for (let c = 1; c <= 6; c++) {
+                    const cell = document.getElementById(`p-cell-${r}-${c}`);
+                    const key = `${r}-${c}`;
+                    const isSelected = p2SelectedGridSet.has(key);
+                    const isCorrectAnswerCell = (r + c === 8);
+
+                    if (isCorrectAnswerCell) {
+                        // 실제 눈의 합이 8인 올바른 칸 -> 에메랄드 초록으로 하이라이트 피드백
+                        cell.className = "p-cell w-10 h-10 border-r border-b border-emerald-300 bg-emerald-100 text-emerald-800 font-bold transition-all";
+                    } else if (isSelected) {
+                        // 사용자가 틀린 오답 칸을 잘못 선택한 경우 -> 부드러운 분홍색/빨간색으로 즉각 시각적 피드백 제공
+                        cell.className = "p-cell w-10 h-10 border-r border-b border-rose-200 bg-rose-50 text-rose-500 font-bold transition-all";
+                    } else {
+                        // 미선택 영역 초기화
+                        cell.className = "p-cell w-10 h-10 border-r border-b border-slate-200 font-black cursor-pointer hover:bg-sky-50 transition-colors";
+                    }
+                }
+            }
+
+            if (answer === '5/36') {
+                feedback.innerHTML = "🎉 <strong>정답입니다!</strong><br>서로 다른 주사위 2개를 던질 때 일어날 수 있는 <strong class='text-indigo-600'>모든 경우의 수는 6 × 6 = 36가지</strong>입니다.<br>나오는 두 눈의 수의 합이 8이 되는 순서쌍은 보드에 초록색으로 드러난 <strong>5가지</strong>가 존재합니다.<br><span class='inline-block bg-white border px-2 py-0.5 rounded text-xs text-emerald-700 font-bold mt-1'>(2, 6), (3, 5), (4, 4), (5, 3), (6, 2)</span><br>따라서 두 눈의 수의 합이 8일 확률은 <strong>5/36</strong>이 됩니다.";
+                feedback.className = "p-4 bg-emerald-50 text-emerald-800 border-2 border-emerald-200 rounded-2xl text-xs sm:text-sm leading-relaxed shadow-sm";
+                showToast("2번 문제를 완벽히 통과했습니다! 🏆", true);
+            } else {
+                feedback.innerHTML = "💡 <strong>아쉬워요! 보드판의 색깔 지도를 살펴볼까요?</strong><br>주사위 두 개를 동시에 던지는 전체 경우의 수는 36가지입니다. 이 중 눈의 합이 정확히 8인 순서쌍들은 보드에 <span class='text-emerald-600 font-bold'>초록색으로 표시된 칸들</span>입니다. 이 칸들의 개수를 다시 세어 올바른 비율을 골라보세요.";
+                feedback.className = "p-4 bg-rose-50 text-rose-800 border-2 border-rose-200 rounded-2xl text-xs sm:text-sm leading-relaxed shadow-sm";
+                showToast("틀렸습니다. 정답 보정 카드를 관찰해 보세요!", false);
+            }
+        }
+
+        // ==================== [2] Chart.js 리얼타임 데이터 시각화 ====================
+        function initChart() {
+            const canvas = document.getElementById('convergenceChart');
+            const ctx = canvas.getContext('2d');
+            
+            if (convergenceChart !== null) {
+                convergenceChart.destroy();
+            }
+
+            const targetLineVal = 1/6;
+            const borderCol = '#0284c7'; // 핑구 오션 블루 컬러 테마 매칭
+            const bgCol = 'rgba(2, 132, 199, 0.05)';
+
+            convergenceChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [0],
+                    datasets: [
+                        {
+                            label: '누적 6의 눈 비율(상대도수)',
+                            data: [0],
+                            borderColor: borderCol,
+                            backgroundColor: bgCol,
+                            borderWidth: 2,
+                            pointRadius: 1,
+                            fill: true,
+                            tension: 0.1
+                        },
+                        {
+                            label: '이론상 목표선 (약 16.7%)',
+                            data: [targetLineVal],
+                            borderColor: '#ef4444', // 핑구 레드 하이라이트
+                            borderWidth: 2,
+                            borderDash: [6, 4],
+                            pointRadius: 0,
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: '누적 주사위 던진 횟수',
+                                font: { size: 10, weight: 'bold' }
+                            },
+                            grid: { display: false }
+                        },
+                        y: {
+                            min: 0,
+                            max: 0.6,
+                            title: {
+                                display: true,
+                                text: '비율 값 (0% ~ 60%)',
+                                font: { size: 10, weight: 'bold' }
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return (value * 100).toFixed(0) + '%';
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: { font: { size: 11 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateChart() {
+            if (!convergenceChart) return;
+
+            const labels = diceDataHistory.map(d => d.trial);
+            const dataPoints = diceDataHistory.map(d => d.ratio);
+            const targetLine = Array(diceDataHistory.length).fill(1/6);
+
+            if (labels.length === 0) {
+                labels.push(0);
+                dataPoints.push(0);
+                targetLine.push(1/6);
+            }
+
+            convergenceChart.data.labels = labels;
+            convergenceChart.data.datasets[0].data = dataPoints;
+            convergenceChart.data.datasets[1].data = targetLine;
+
+            convergenceChart.update('none'); 
+        }
+
+        // ==================== 초기 구동 및 로드 핸들링 ====================
+        window.onload = function() {
+            renderDiceFace(1);
+            initChart();
+            setSimCount(100);
+            toggleDiceMode('manual');
+        };
+    </script>
+</body>
+</html>
